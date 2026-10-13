@@ -10,9 +10,14 @@ document.querySelectorAll('nav a').forEach(link => link.addEventListener('click'
   menu.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'Abrir menu');
 }));
 document.addEventListener('keydown', event => { if (event.key === 'Escape') { menu.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'Abrir menu'); } });
-document.querySelectorAll('[data-service]').forEach(link => link.addEventListener('click', () => { document.querySelector('#servico').value = link.dataset.service; }));
+const serviceSelect = document.querySelector('#servico');
+document.querySelectorAll('[data-service]').forEach(link => link.addEventListener('click', () => { if (serviceSelect) serviceSelect.value = link.dataset.service; }));
+const serviceNames = {'field-services':'Field services',equipamentos:'Instalação de equipamentos','roll-out':'Roll-out',conectividade:'Links e conectividade'};
+if (serviceSelect) serviceSelect.value = serviceNames[new URLSearchParams(location.search).get('servico')] || 'Atendimento emergencial';
+const currentPage = location.pathname.split('/').pop() || 'index.html';
+document.querySelectorAll('nav a').forEach(link => { if (link.getAttribute('href') === currentPage) link.setAttribute('aria-current', 'page'); });
 document.querySelector('#year').textContent = new Date().getFullYear();
-document.querySelector('#contact-form').addEventListener('submit', event => {
+document.querySelector('#contact-form')?.addEventListener('submit', event => {
   event.preventDefault();
   const form = event.currentTarget;
   if (!form.reportValidity()) return;
