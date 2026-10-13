@@ -60,3 +60,31 @@ requestForm?.addEventListener('submit', event => {
   window.open(url, '_blank', 'noopener,noreferrer');
 });
 requestForm?.elements.telefone.addEventListener('input', event => event.target.setCustomValidity(''));
+
+const slideshow = document.querySelector('.hero-slideshow');
+if (slideshow) {
+  const slides = [...slideshow.querySelectorAll('.hero-slide')];
+  const dots = [...slideshow.querySelectorAll('[data-slide]')];
+  const pauseButton = document.querySelector('#slide-pause');
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let current = 0;
+  let paused = motion.matches;
+  function showSlide(index) {
+    current = index;
+    slides.forEach((slide, i) => { slide.classList.toggle('active', i === current); slide.setAttribute('aria-hidden', String(i !== current)); });
+    dots.forEach((dot, i) => dot.setAttribute('aria-pressed', String(i === current)));
+    document.querySelector('#slide-caption').textContent = slides[current].dataset.caption;
+  }
+  function updatePause() {
+    pauseButton.textContent = paused ? 'Reproduzir ▶' : 'Pausar ⏸';
+    pauseButton.setAttribute('aria-label', paused ? 'Reproduzir apresentação' : 'Pausar apresentação');
+  }
+  dots.forEach((dot, i) => dot.addEventListener('click', () => { showSlide(i); paused = true; updatePause(); }));
+  pauseButton.addEventListener('click', () => { paused = !paused; updatePause(); });
+  motion.addEventListener('change', event => { if (event.matches) { paused = true; updatePause(); } });
+  updatePause();
+  window.setInterval(() => {
+    if (!paused && !document.hidden) showSlide((current + 1) % slides.length);
+  }, 5000);
+}
+
